@@ -8,9 +8,9 @@ app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config["MAIL_PORT"] = 465
 app.config["MAIL_USE_TLS"] = False
 app.config["MAIL_USE_SSL"] = True
+app.config["MAIL_TIMEOUT"] = 10
 app.config["MAIL_USERNAME"] = os.getenv("GMAIL_USER")
 app.config["MAIL_PASSWORD"] = os.getenv("GMAIL_APP_PASSWORD")
-app.config["MAIL_TIMEOUT"] = 10
 
 mail = Mail(app)
 
@@ -27,9 +27,8 @@ def join_community():
         instagram = request.form.get("instagram")
 
         if not email:
-            return "Email is required"
+            return "Email is required", 400
 
-        # Send email to customer
         msg = Message(
             subject="Welcome to Nayya Community",
             sender=app.config["MAIL_USERNAME"],
@@ -51,12 +50,13 @@ Nayya
         try:
             mail.send(msg)
             return "success", 200
-        
+
         except Exception as e:
             print("EMAIL ERROR:", e)
             return "Email failed", 500
 
     return render_template("join_community.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
