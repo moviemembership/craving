@@ -48,15 +48,9 @@ Nayya
 
         mail.send(msg)
 
-        return redirect("/thank-you")
+        return "success", 200
 
     return render_template("join_community.html")
-
-
-@app.route("/thank-you")
-def thank_you():
-    return render_template("thank_you.html")
-
 
 if __name__ == "__main__":
     app.run(debug=True)
