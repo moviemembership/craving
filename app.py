@@ -9,6 +9,7 @@ app.config["MAIL_PORT"] = 587
 app.config["MAIL_USE_TLS"] = True
 app.config["MAIL_USERNAME"] = os.getenv("GMAIL_USER")
 app.config["MAIL_PASSWORD"] = os.getenv("GMAIL_APP_PASSWORD")
+app.config["MAIL_TIMEOUT"] = 10
 
 mail = Mail(app)
 
@@ -46,9 +47,13 @@ Nayya
 """
         )
 
-        mail.send(msg)
-
-        return "success", 200
+        try:
+            mail.send(msg)
+            return "success", 200
+        
+        except Exception as e:
+            print("EMAIL ERROR:", e)
+            return "Email failed", 500
 
     return render_template("join_community.html")
 
