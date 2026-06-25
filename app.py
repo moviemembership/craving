@@ -50,7 +50,7 @@ Nayya
         try:
             print("GMAIL_USER =", os.getenv("GMAIL_USER"))
             print("PASSWORD EXISTS =", bool(os.getenv("GMAIL_APP_PASSWORD")))
-            #mail.send(msg)
+            mail.send(msg)
             return "success", 200
 
         except Exception as e:
