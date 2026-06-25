@@ -48,7 +48,9 @@ Nayya
         )
 
         try:
-            mail.send(msg)
+            print("GMAIL_USER =", os.getenv("GMAIL_USER"))
+            print("PASSWORD EXISTS =", bool(os.getenv("GMAIL_APP_PASSWORD")))
+            #mail.send(msg)
             return "success", 200
 
         except Exception as e:
@@ -56,6 +58,13 @@ Nayya
             return "Email failed", 500
 
     return render_template("join_community.html")
+
+@app.route("/test")
+def test():
+    return {
+        "gmail": os.getenv("GMAIL_USER"),
+        "password_exists": bool(os.getenv("GMAIL_APP_PASSWORD"))
+    }
 
 
 if __name__ == "__main__":
