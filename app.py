@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect
 from flask_mail import Mail, Message
 import os
+import smtplib
 
 app = Flask(__name__)
 
@@ -50,6 +51,7 @@ Nayya
         try:
             print("MAIL_USERNAME =", os.getenv("MAIL_USERNAME"))
             print("PASSWORD EXISTS =", bool(os.getenv("MAIL_PASSWORD")))
+            smtplib.SMTP.debuglevel = 1
             mail.send(msg)
             return "success", 200
 
