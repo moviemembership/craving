@@ -4,13 +4,13 @@ import os
 
 app = Flask(__name__)
 
-app.config["MAIL_SERVER"] = "smtp.gmail.com"
+app.config["MAIL_SERVER"] = "smtp.hostinger.com"
 app.config["MAIL_PORT"] = 465
 app.config["MAIL_USE_TLS"] = False
 app.config["MAIL_USE_SSL"] = True
 app.config["MAIL_TIMEOUT"] = 10
-app.config["MAIL_USERNAME"] = os.getenv("GMAIL_USER")
-app.config["MAIL_PASSWORD"] = os.getenv("GMAIL_APP_PASSWORD")
+app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME")
+app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD")
 
 mail = Mail(app)
 
@@ -31,7 +31,7 @@ def join_community():
 
         msg = Message(
             subject="Welcome to Nayya Community",
-            sender=app.config["MAIL_USERNAME"],
+            sender=("Nayya Community", "community@nayyastudio.com"),
             recipients=[email],
             body=f"""
 Hello,
@@ -48,8 +48,8 @@ Nayya
         )
 
         try:
-            print("GMAIL_USER =", os.getenv("GMAIL_USER"))
-            print("PASSWORD EXISTS =", bool(os.getenv("GMAIL_APP_PASSWORD")))
+            print("MAIL_USERNAME =", os.getenv("MAIL_USERNAME"))
+            print("PASSWORD EXISTS =", bool(os.getenv("MAIL_PASSWORD")))
             mail.send(msg)
             return "success", 200
 
@@ -62,8 +62,8 @@ Nayya
 @app.route("/test")
 def test():
     return {
-        "gmail": os.getenv("GMAIL_USER"),
-        "password_exists": bool(os.getenv("GMAIL_APP_PASSWORD"))
+        "gmail": os.getenv("MAIL_USERNAME"))"),
+        "password_exists": bool(os.getenv("MAIL_PASSWORD"))
     }
 
 
