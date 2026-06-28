@@ -1,19 +1,10 @@
 from flask import Flask, render_template, request, redirect
-from flask_mail import Mail, Message
 import os
-import smtplib
+import requests
 
 app = Flask(__name__)
 
-app.config["MAIL_SERVER"] = "smtp.hostinger.com"
-app.config["MAIL_PORT"] = 587
-app.config["MAIL_USE_TLS"] = True
-app.config["MAIL_USE_SSL"] = False
-app.config["MAIL_TIMEOUT"] = 10
-app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME")
-app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD")
-
-mail = Mail(app)
+BREVO_API_KEY = os.getenv("BREVO_API_KEY")
 
 
 @app.route("/")
@@ -30,43 +21,55 @@ def join_community():
         if not email:
             return "Email is required", 400
 
-        msg = Message(
-            subject="Welcome to Nayya Community",
-            sender=("Nayya Community", "community@nayyastudio.com"),
-            recipients=[email],
-            body=f"""
-Hello,
+        data = {
+            "sender": {
+                "name": "Nayya Community",
+                "email": "community@nayyastudio.com"
+            },
+            "to": [
+                {
+                    "email": email
+                }
+            ],
+            "subject": "Welcome to Nayya Community",
+            "htmlContent": f"""
+                <h2>Welcome to Nayya Community</h2>
 
-Thank you for joining Nayya Community.
+                <p>Thank you for joining us.</p>
 
-We're happy to have you here.
+                <p>We're happy to have you here.</p>
 
-Instagram username: {instagram if instagram else "Not provided"}
+                <p>Instagram username: {instagram if instagram else "Not provided"}</p>
 
-Love,
-Nayya
-"""
-        )
+                <p>Love,<br>Nayya</p>
+            """
+        }
 
         try:
-            print("MAIL_USERNAME =", os.getenv("MAIL_USERNAME"))
-            print("PASSWORD EXISTS =", bool(os.getenv("MAIL_PASSWORD")))
-            smtplib.SMTP.debuglevel = 1
-            mail.send(msg)
-            return "success", 200
+            response = requests.post(
+                "https://api.brevo.com/v3/smtp/email",
+                headers={
+                    "accept": "application/json",
+                    "api-key": BREVO_API_KEY,
+                    "content-type": "application/json"
+                },
+                json=data,
+                timeout=10
+            )
+
+            print(response.status_code)
+            print(response.text)
+
+            if response.status_code in [200, 201, 202]:
+                return "success", 200
+
+            return "Email failed", 500
 
         except Exception as e:
-            print("EMAIL ERROR:", e)
+            print("BREVO ERROR:", e)
             return "Email failed", 500
 
     return render_template("join_community.html")
-
-@app.route("/test")
-def test():
-    return {
-        "mail_username": os.getenv("MAIL_USERNAME"),
-        "password_exists": bool(os.getenv("MAIL_PASSWORD"))
-    }
 
 
 if __name__ == "__main__":
