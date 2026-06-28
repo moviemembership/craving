@@ -62,7 +62,7 @@ Nayya
 @app.route("/test")
 def test():
     return {
-        "gmail": os.getenv("MAIL_USERNAME"))"),
+        "mail_username": os.getenv("MAIL_USERNAME"))"),
         "password_exists": bool(os.getenv("MAIL_PASSWORD"))
     }
 
