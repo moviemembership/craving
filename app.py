@@ -15,11 +15,13 @@ def home():
 @app.route("/join-community", methods=["GET", "POST"])
 def join_community():
     if request.method == "POST":
+        name = request.form.get("name")
         email = request.form.get("email")
         instagram = request.form.get("instagram")
-
-        if not email:
-            return "Email is required", 400
+        birthday = request.form.get("birthday")
+        
+        if not name or not email or not instagram or not birthday:
+            return "All fields are required", 400
 
         data = {
             "sender": {
@@ -37,9 +39,7 @@ def join_community():
 
                 <p>Thank you for joining us.</p>
 
-                <p>We're happy to have you here.</p>
-
-                <p>Instagram username: {instagram if instagram else "Not provided"}</p>
+                <p>We're happy to have you here. {name}</p>
 
                 <p>Love,<br>Nayya</p>
             """
