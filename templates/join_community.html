@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
   <style>
     * {
@@ -379,10 +381,10 @@
               <div class="input-wrap">
                 <span class="input-icon">✦</span>
                 <input
-                  type="date"
-                  name="birthday"
-                  id="birthdayInput"
-                  required
+                    id="birthday"
+                    name="birthday"
+                    placeholder="Birthday"
+                    required
                 >
               </div>
 
@@ -474,6 +476,12 @@
       }
     
     document.getElementById("birthdayInput").value = getTodayGMT8();
+
+    flatpickr("#birthday", {
+        dateFormat: "Y-m-d",
+        defaultDate: new Date()
+    });
+    
   </script>
 
 </body>
