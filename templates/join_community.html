@@ -217,6 +217,64 @@
       border-radius: 18px;
       box-shadow: 0 12px 35px rgba(90, 60, 45, 0.18);
       border: 1px solid rgba(130, 105, 94, 0.18);
+      overflow: hidden;
+    }
+
+    .flatpickr-months {
+      padding: 10px 8px 4px;
+      background: #fffaf0;
+    }
+
+    .flatpickr-current-month {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding-top: 0;
+      height: auto;
+      left: 0;
+      width: 100%;
+    }
+
+    .flatpickr-current-month .flatpickr-monthDropdown-months,
+    .flatpickr-current-month .nayya-year-select {
+      height: 34px;
+      border: 1px solid rgba(130, 105, 94, 0.25);
+      border-radius: 10px;
+      background: #fffaf0;
+      color: #4b403b;
+      font-family: "Poppins", sans-serif;
+      font-size: 14px;
+      padding: 0 10px;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .flatpickr-current-month input.cur-year {
+      display: none !important;
+    }
+
+    .flatpickr-current-month .numInputWrapper {
+      display: none !important;
+    }
+
+    .flatpickr-weekdays {
+      background: #fffaf0;
+    }
+
+    .flatpickr-weekday {
+      color: #8b6f68;
+      font-weight: 500;
+    }
+
+    .flatpickr-day {
+      color: #4b403b;
+      border-radius: 10px;
+    }
+
+    .flatpickr-day:hover {
+      background: #f3d8d4;
+      border-color: #f3d8d4;
     }
 
     .flatpickr-day.selected,
@@ -224,6 +282,7 @@
     .flatpickr-day.endRange {
       background: #d19894;
       border-color: #d19894;
+      color: #fff;
     }
 
     .flatpickr-day.today {
@@ -332,6 +391,10 @@
       .thank-message {
         font-size: 14px;
         padding: 24px;
+      }
+
+      .flatpickr-calendar {
+        max-width: 330px;
       }
     }
   </style>
@@ -450,8 +513,43 @@
     function getTodayGMT8() {
       const now = new Date();
       const utc = now.getTime() + now.getTimezoneOffset() * 60000;
-      const gmt8 = new Date(utc + 8 * 60 * 60 * 1000);
-      return gmt8;
+      return new Date(utc + 8 * 60 * 60 * 1000);
+    }
+
+    function addYearDropdown(instance) {
+      const currentMonth = instance.calendarContainer.querySelector(".flatpickr-current-month");
+      const yearInput = instance.currentYearElement;
+
+      if (!currentMonth || !yearInput) return;
+
+      let existingSelect = currentMonth.querySelector(".nayya-year-select");
+      if (existingSelect) {
+        existingSelect.value = instance.currentYear;
+        return;
+      }
+
+      const yearSelect = document.createElement("select");
+      yearSelect.className = "nayya-year-select";
+      yearSelect.setAttribute("aria-label", "Select year");
+
+      const maxYear = getTodayGMT8().getFullYear();
+      const minYear = maxYear - 100;
+
+      for (let year = maxYear; year >= minYear; year--) {
+        const option = document.createElement("option");
+        option.value = year;
+        option.textContent = year;
+        yearSelect.appendChild(option);
+      }
+
+      yearSelect.value = instance.currentYear;
+
+      yearSelect.addEventListener("change", function () {
+        instance.changeYear(parseInt(this.value, 10));
+      });
+
+      yearInput.parentNode.style.display = "none";
+      currentMonth.appendChild(yearSelect);
     }
 
     flatpickr("#birthday", {
@@ -461,7 +559,20 @@
       defaultDate: getTodayGMT8(),
       allowInput: false,
       clickOpens: true,
-      disableMobile: true
+      disableMobile: true,
+      monthSelectorType: "dropdown",
+      onReady: function(selectedDates, dateStr, instance) {
+        addYearDropdown(instance);
+      },
+      onMonthChange: function(selectedDates, dateStr, instance) {
+        addYearDropdown(instance);
+      },
+      onYearChange: function(selectedDates, dateStr, instance) {
+        addYearDropdown(instance);
+      },
+      onOpen: function(selectedDates, dateStr, instance) {
+        addYearDropdown(instance);
+      }
     });
 
     form.addEventListener("submit", async function(event) {
