@@ -731,9 +731,12 @@
 
                 <div class="popup-box">
             
-                    <button id="closeDuplicatePopup" class="popup-close">
-                        &times;
-                    </button>
+                    <button
+                      type="button"
+                      id="closeDuplicatePopup"
+                      class="popup-close">
+                      &times;
+                  </button>
             
                     <h2 id="popupTitle">
                         Already Registered
@@ -741,7 +744,9 @@
             
                     <p id="duplicateMessage"></p>
             
-                    <button id="popupOkBtn">
+                    <button
+                        type="button"
+                        id="popupOkBtn">
                         OK
                     </button>
             
@@ -910,6 +915,22 @@
       duplicatePopup.classList.add("show");
     }
   });
+
+  closeDuplicatePopup.addEventListener("click", function(e) {
+
+    e.preventDefault();
+
+    duplicatePopup.classList.remove("show");
+
+});
+
+  popupOkBtn.addEventListener("click", function(e) {
+
+    e.preventDefault();
+
+    duplicatePopup.classList.remove("show");
+
+});
 </script>
 
 </body>
