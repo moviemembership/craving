@@ -423,9 +423,9 @@
     
         font-size:18px;
     }
-    
-    .popup-box button{
-    
+
+    .popup-box #popupOkBtn{
+
         margin-top:30px;
     
         width:100%;
@@ -449,42 +449,50 @@
         transition:.25s;
     }
     
-    .popup-box button:hover{
+    .popup-box #popupOkBtn:hover{
         background:#a9aa9d;
     }
     
     /* Close button */
     
     .popup-close{
-    
-        position:absolute;
-    
-        top:16px;
-        right:16px;
-    
-        width:34px;
-        height:34px;
-    
-        border:none;
-    
-        background:transparent !important;
-    
-        color:#888;
-    
-        font-size:28px;
-    
-        cursor:pointer;
-    
-        line-height:1;
-    
-        padding:0;
-    
-        margin:0 !important;
-    }
-    
-    .popup-close:hover{
-        color:#444;
-    }
+
+      position:absolute;
+  
+      top:16px;
+      right:16px;
+  
+      width:34px;
+      height:34px;
+  
+      display:flex;
+      align-items:center;
+      justify-content:center;
+  
+      border:none;
+      background:transparent !important;
+  
+      color:#6f6660;
+  
+      font-size:26px;
+      font-weight:600;
+  
+      cursor:pointer;
+  
+      padding:0;
+      margin:0;
+  
+      line-height:1;
+  
+      box-shadow:none;
+  
+      z-index:10;
+  }
+  
+  .popup-close:hover{
+      background:transparent !important;
+      color:#4b403b;
+  }
 
     @keyframes fadeOut {
       from {
@@ -540,6 +548,9 @@
   
           top:12px;
           right:12px;
+
+          width:28px;
+          height:28px;
   
           font-size:24px;
       }
