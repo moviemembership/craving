@@ -47,6 +47,29 @@ def join_community():
         if not name or not email or not instagram or not birthday:
             return "All fields are required", 400
 
+        existing_email = CommunityMember.query.filter(
+            db.func.lower(CommunityMember.email) == email.lower()
+        ).first()
+        
+        if existing_email:
+            return jsonify({
+                "success": False,
+                "type": "email",
+                "message": f"Email ({email}) is already registered."
+            }), 409
+        
+        
+        existing_instagram = CommunityMember.query.filter(
+            db.func.lower(CommunityMember.instagram) == instagram.lower()
+        ).first()
+        
+        if existing_instagram:
+            return jsonify({
+                "success": False,
+                "type": "instagram",
+                "message": f"Instagram User ({instagram}) is already registered. Please try another Instagram account."
+            }), 409
+
         member = CommunityMember(
             name=name,
             email=email,
