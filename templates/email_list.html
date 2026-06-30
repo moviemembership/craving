@@ -89,14 +89,32 @@
       background: #9fa396;
     }
 
+    .action-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
     .delete-btn {
       background: #d19894;
-      margin-bottom: 18px;
-      width: 170px;
+      width: 140px;
     }
 
     .delete-btn:hover {
       background: #bd807c;
+    }
+
+    .delete-selected-btn {
+      display: none;
+      background: #d19894;
+      width: 180px;
+    }
+
+    .cancel-btn-main {
+      display: none;
+      background: #c7c8bc;
+      width: 120px;
     }
 
     table {
@@ -121,6 +139,21 @@
 
     tr:hover {
       background: rgba(255, 250, 240, 0.7);
+    }
+
+    .checkbox-column {
+      display: none;
+      width: 45px;
+    }
+
+    .checkbox-column input {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .delete-mode .checkbox-column {
+      display: table-cell;
     }
 
     .pagination {
@@ -179,8 +212,14 @@
       flex: 1;
     }
 
-    .cancel-btn {
+    .popup-cancel {
       background: #c7c8bc;
+    }
+
+    .empty-row {
+      text-align: center;
+      color: #8a7c73;
+      padding: 35px;
     }
 
     @media (max-width: 768px) {
@@ -211,7 +250,7 @@
 <body>
 
 <div class="page">
-  <div class="container">
+  <div class="container" id="emailContainer">
 
     <div class="top">
       <h1>Nayya Community List</h1>
@@ -249,14 +288,24 @@
       <button type="submit">Apply</button>
     </form>
 
-    <button class="delete-btn" onclick="openDeletePopup()">
-      Delete Selected
-    </button>
+    <div class="action-row">
+      <button class="delete-btn" id="deleteModeBtn">
+        Delete
+      </button>
+
+      <button class="cancel-btn-main" id="cancelDeleteBtn">
+        Cancel
+      </button>
+
+      <button class="delete-selected-btn" id="deleteSelectedBtn">
+        Delete Selected
+      </button>
+    </div>
 
     <table>
       <thead>
         <tr>
-          <th>
+          <th class="checkbox-column">
             <input type="checkbox" id="selectAll">
           </th>
           <th>Name</th>
@@ -270,7 +319,7 @@
       <tbody>
         {% for member in members.items %}
         <tr>
-          <td>
+          <td class="checkbox-column">
             <input type="checkbox" class="member-checkbox" value="{{ member.id }}">
           </td>
           <td>{{ member.name }}</td>
@@ -278,6 +327,12 @@
           <td>{{ member.instagram }}</td>
           <td>{{ member.birthday }}</td>
           <td>{{ member.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" class="empty-row">
+            No registered members found.
+          </td>
         </tr>
         {% endfor %}
       </tbody>
@@ -310,11 +365,13 @@
 <div class="popup-bg" id="deletePopup">
   <div class="popup">
     <h2>Confirm Delete</h2>
-    <p>Are you sure you want to delete the selected data?</p>
+    <p id="deleteMessage">
+      Are you sure you want to delete the selected data?
+    </p>
 
     <div class="popup-buttons">
-      <button class="cancel-btn" onclick="closeDeletePopup()">Cancel</button>
-      <button onclick="confirmDelete()">Delete</button>
+      <button class="popup-cancel" id="closeDeletePopupBtn">Cancel</button>
+      <button id="confirmDeleteBtn">Delete</button>
     </div>
   </div>
 </div>
@@ -325,13 +382,54 @@
     <p>Please select at least one row before deleting.</p>
 
     <div class="popup-buttons">
-      <button onclick="closeNonePopup()">Okay</button>
+      <button id="closeNonePopupBtn">Okay</button>
     </div>
   </div>
 </div>
 
 <script>
+  const emailContainer = document.getElementById("emailContainer");
+  const deleteModeBtn = document.getElementById("deleteModeBtn");
+  const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
+  const deleteSelectedBtn = document.getElementById("deleteSelectedBtn");
   const selectAll = document.getElementById("selectAll");
+
+  const deletePopup = document.getElementById("deletePopup");
+  const nonePopup = document.getElementById("nonePopup");
+  const deleteMessage = document.getElementById("deleteMessage");
+  const closeDeletePopupBtn = document.getElementById("closeDeletePopupBtn");
+  const closeNonePopupBtn = document.getElementById("closeNonePopupBtn");
+  const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+
+  function enterDeleteMode() {
+    emailContainer.classList.add("delete-mode");
+
+    deleteModeBtn.style.display = "none";
+    cancelDeleteBtn.style.display = "inline-block";
+    deleteSelectedBtn.style.display = "inline-block";
+  }
+
+  function exitDeleteMode() {
+    emailContainer.classList.remove("delete-mode");
+
+    deleteModeBtn.style.display = "inline-block";
+    cancelDeleteBtn.style.display = "none";
+    deleteSelectedBtn.style.display = "none";
+
+    selectAll.checked = false;
+
+    document.querySelectorAll(".member-checkbox").forEach(box => {
+      box.checked = false;
+    });
+  }
+
+  function getSelectedIds() {
+    return Array.from(document.querySelectorAll(".member-checkbox:checked"))
+      .map(box => parseInt(box.value));
+  }
+
+  deleteModeBtn.addEventListener("click", enterDeleteMode);
+  cancelDeleteBtn.addEventListener("click", exitDeleteMode);
 
   selectAll.addEventListener("change", function () {
     document.querySelectorAll(".member-checkbox").forEach(box => {
@@ -339,31 +437,29 @@
     });
   });
 
-  function getSelectedIds() {
-    return Array.from(document.querySelectorAll(".member-checkbox:checked"))
-      .map(box => parseInt(box.value));
-  }
-
-  function openDeletePopup() {
+  deleteSelectedBtn.addEventListener("click", function () {
     const ids = getSelectedIds();
 
     if (ids.length === 0) {
-      document.getElementById("nonePopup").style.display = "flex";
+      nonePopup.style.display = "flex";
       return;
     }
 
-    document.getElementById("deletePopup").style.display = "flex";
-  }
+    deleteMessage.innerText =
+      `Are you sure you want to delete ${ids.length} selected member${ids.length > 1 ? "s" : ""}?`;
 
-  function closeDeletePopup() {
-    document.getElementById("deletePopup").style.display = "none";
-  }
+    deletePopup.style.display = "flex";
+  });
 
-  function closeNonePopup() {
-    document.getElementById("nonePopup").style.display = "none";
-  }
+  closeDeletePopupBtn.addEventListener("click", function () {
+    deletePopup.style.display = "none";
+  });
 
-  async function confirmDelete() {
+  closeNonePopupBtn.addEventListener("click", function () {
+    nonePopup.style.display = "none";
+  });
+
+  confirmDeleteBtn.addEventListener("click", async function () {
     const ids = getSelectedIds();
 
     const response = await fetch("/delete-members", {
@@ -379,7 +475,7 @@
     } else {
       alert("Delete failed. Please try again.");
     }
-  }
+  });
 </script>
 
 </body>
