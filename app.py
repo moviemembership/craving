@@ -8,6 +8,8 @@ app = Flask(__name__)
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 BREVO_API_KEY = os.getenv("BREVO_API_KEY")
+ADMIN_USERNAME = os.getenv("ADMIN_USERNAME")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 
 if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
