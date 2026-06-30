@@ -316,6 +316,41 @@
       border-color: #d19894;
     }
 
+    .popup-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    
+    .popup-box {
+      width: 90%;
+      max-width: 380px;
+      background: #fffaf0;
+      border-radius: 28px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.18);
+    }
+    
+    .popup-box h2 {
+      margin-top: 0;
+      color: #4b403b;
+      font-weight: 500;
+    }
+    
+    .popup-box p {
+      color: #6f6660;
+      line-height: 1.7;
+    }
+    
+    .popup-box button {
+      margin-top: 18px;
+    }
+
     @keyframes fadeOut {
       from {
         opacity: 1;
@@ -513,8 +548,12 @@
             
             </div>
 
-            <div class="error-message" id="errorMessage">
-              Something went wrong. Please try again.
+            <div class="popup-bg" id="duplicatePopup">
+              <div class="popup-box">
+                <h2>Already Registered</h2>
+                <p id="duplicateMessage"></p>
+                <button type="button" id="closeDuplicatePopup">OK</button>
+              </div>
             </div>
 
           </form>
@@ -548,6 +587,10 @@
     const thankYouSection = document.getElementById("thankYouSection");
     const submitBtn = document.getElementById("submitBtn");
     const errorMessage = document.getElementById("errorMessage");
+
+    document.getElementById("closeDuplicatePopup").addEventListener("click", function () {
+      document.getElementById("duplicatePopup").style.display = "none";
+    });
 
     function getTodayGMT8() {
       const now = new Date();
@@ -642,13 +685,20 @@
           }, 500);
 
         } else {
-          throw new Error("Submit failed");
+          } else {
+            const data = await response.json();
+            throw new Error(data.message || "Something went wrong. Please try again.");
+          }
         }
 
       } catch (error) {
         submitBtn.disabled = false;
         submitBtn.innerText = "SIGN UP";
-        errorMessage.style.display = "block";
+      
+        document.getElementById("duplicateMessage").innerText =
+          error.message || "Something went wrong. Please try again.";
+      
+        document.getElementById("duplicatePopup").style.display = "flex";
       }
     });
   </script>
