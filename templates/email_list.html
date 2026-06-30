@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Nayya Email List</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: #ead7ca;
+      color: #4b403b;
+    }
+
+    .page {
+      min-height: 100vh;
+      padding: 40px;
+      background: linear-gradient(135deg, #ead7ca, #f7efe7);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      background: rgba(255, 250, 240, 0.92);
+      border-radius: 30px;
+      padding: 35px;
+      box-shadow: 0 12px 35px rgba(90, 60, 45, 0.12);
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: center;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      font-weight: 500;
+      letter-spacing: 2px;
+    }
+
+    .total-box {
+      background: #aeb2a6;
+      color: white;
+      padding: 16px 24px;
+      border-radius: 20px;
+      font-size: 18px;
+      letter-spacing: 1px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 230px 150px 120px;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    input, select, button {
+      height: 50px;
+      border-radius: 18px;
+      border: 1px solid rgba(130, 105, 94, 0.25);
+      background: rgba(255, 250, 240, 0.9);
+      padding: 0 16px;
+      font-family: "Poppins", sans-serif;
+      font-size: 14px;
+      color: #4b403b;
+      outline: none;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: #aeb2a6;
+      color: white;
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+
+    button:hover {
+      background: #9fa396;
+    }
+
+    .delete-btn {
+      background: #d19894;
+      margin-bottom: 18px;
+      width: 170px;
+    }
+
+    .delete-btn:hover {
+      background: #bd807c;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.45);
+    }
+
+    th, td {
+      padding: 16px;
+      text-align: left;
+      border-bottom: 1px solid rgba(130, 105, 94, 0.15);
+      font-size: 14px;
+    }
+
+    th {
+      background: rgba(174, 178, 166, 0.35);
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background: rgba(255, 250, 240, 0.7);
+    }
+
+    .pagination {
+      margin-top: 25px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pagination a {
+      text-decoration: none;
+      color: #4b403b;
+      padding: 10px 15px;
+      border-radius: 14px;
+      background: rgba(174, 178, 166, 0.35);
+    }
+
+    .pagination .active {
+      background: #aeb2a6;
+      color: white;
+    }
+
+    .popup-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+
+    .popup {
+      width: 90%;
+      max-width: 420px;
+      background: #fffaf0;
+      border-radius: 28px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.18);
+    }
+
+    .popup h2 {
+      margin-top: 0;
+      font-weight: 500;
+    }
+
+    .popup-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 25px;
+    }
+
+    .popup-buttons button {
+      flex: 1;
+    }
+
+    .cancel-btn {
+      background: #c7c8bc;
+    }
+
+    @media (max-width: 768px) {
+      .page {
+        padding: 20px;
+      }
+
+      .container {
+        padding: 25px;
+      }
+
+      .controls {
+        grid-template-columns: 1fr;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+      }
+
+      th, td {
+        white-space: nowrap;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="page">
+  <div class="container">
+
+    <div class="top">
+      <h1>Nayya Community List</h1>
+      <div class="total-box">
+        Total Registered: {{ total_members }}
+      </div>
+    </div>
+
+    <form method="GET" action="/email-list" class="controls">
+      <input
+        type="text"
+        name="search"
+        placeholder="Search name, email or Instagram..."
+        value="{{ search }}"
+      >
+
+      <select name="sort">
+        <option value="latest" {% if sort == "latest" %}selected{% endif %}>Latest to Oldest</option>
+        <option value="oldest" {% if sort == "oldest" %}selected{% endif %}>Oldest to Latest</option>
+        <option value="name_az" {% if sort == "name_az" %}selected{% endif %}>Name A to Z</option>
+        <option value="name_za" {% if sort == "name_za" %}selected{% endif %}>Name Z to A</option>
+        <option value="email_az" {% if sort == "email_az" %}selected{% endif %}>Email A to Z</option>
+        <option value="email_za" {% if sort == "email_za" %}selected{% endif %}>Email Z to A</option>
+        <option value="instagram_az" {% if sort == "instagram_az" %}selected{% endif %}>Instagram A to Z</option>
+        <option value="instagram_za" {% if sort == "instagram_za" %}selected{% endif %}>Instagram Z to A</option>
+      </select>
+
+      <select name="per_page">
+        <option value="10" {% if per_page == 10 %}selected{% endif %}>10 / page</option>
+        <option value="20" {% if per_page == 20 %}selected{% endif %}>20 / page</option>
+        <option value="30" {% if per_page == 30 %}selected{% endif %}>30 / page</option>
+        <option value="50" {% if per_page == 50 %}selected{% endif %}>50 / page</option>
+      </select>
+
+      <button type="submit">Apply</button>
+    </form>
+
+    <button class="delete-btn" onclick="openDeletePopup()">
+      Delete Selected
+    </button>
+
+    <table>
+      <thead>
+        <tr>
+          <th>
+            <input type="checkbox" id="selectAll">
+          </th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Instagram</th>
+          <th>Birthday</th>
+          <th>Registered Date</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for member in members.items %}
+        <tr>
+          <td>
+            <input type="checkbox" class="member-checkbox" value="{{ member.id }}">
+          </td>
+          <td>{{ member.name }}</td>
+          <td>{{ member.email }}</td>
+          <td>{{ member.instagram }}</td>
+          <td>{{ member.birthday }}</td>
+          <td>{{ member.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      {% if members.has_prev %}
+        <a href="?page={{ members.prev_num }}&search={{ search }}&sort={{ sort }}&per_page={{ per_page }}">Previous</a>
+      {% endif %}
+
+      {% for page_num in members.iter_pages() %}
+        {% if page_num %}
+          <a
+            href="?page={{ page_num }}&search={{ search }}&sort={{ sort }}&per_page={{ per_page }}"
+            class="{% if page_num == members.page %}active{% endif %}"
+          >
+            {{ page_num }}
+          </a>
+        {% endif %}
+      {% endfor %}
+
+      {% if members.has_next %}
+        <a href="?page={{ members.next_num }}&search={{ search }}&sort={{ sort }}&per_page={{ per_page }}">Next</a>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+
+<div class="popup-bg" id="deletePopup">
+  <div class="popup">
+    <h2>Confirm Delete</h2>
+    <p>Are you sure you want to delete the selected data?</p>
+
+    <div class="popup-buttons">
+      <button class="cancel-btn" onclick="closeDeletePopup()">Cancel</button>
+      <button onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="popup-bg" id="nonePopup">
+  <div class="popup">
+    <h2>No Data Selected</h2>
+    <p>Please select at least one row before deleting.</p>
+
+    <div class="popup-buttons">
+      <button onclick="closeNonePopup()">Okay</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const selectAll = document.getElementById("selectAll");
+
+  selectAll.addEventListener("change", function () {
+    document.querySelectorAll(".member-checkbox").forEach(box => {
+      box.checked = selectAll.checked;
+    });
+  });
+
+  function getSelectedIds() {
+    return Array.from(document.querySelectorAll(".member-checkbox:checked"))
+      .map(box => parseInt(box.value));
+  }
+
+  function openDeletePopup() {
+    const ids = getSelectedIds();
+
+    if (ids.length === 0) {
+      document.getElementById("nonePopup").style.display = "flex";
+      return;
+    }
+
+    document.getElementById("deletePopup").style.display = "flex";
+  }
+
+  function closeDeletePopup() {
+    document.getElementById("deletePopup").style.display = "none";
+  }
+
+  function closeNonePopup() {
+    document.getElementById("nonePopup").style.display = "none";
+  }
+
+  async function confirmDelete() {
+    const ids = getSelectedIds();
+
+    const response = await fetch("/delete-members", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ ids: ids })
+    });
+
+    if (response.ok) {
+      location.reload();
+    } else {
+      alert("Delete failed. Please try again.");
+    }
+  }
+</script>
+
+</body>
+</html>
