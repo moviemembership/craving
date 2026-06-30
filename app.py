@@ -146,6 +146,30 @@ def admin_page():
         total_members=total_members
     )
 
+@app.route("/admin-login", methods=["GET", "POST"])
+def admin_login():
+
+    if request.method == "POST":
+
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        if (
+            username == ADMIN_USERNAME
+            and
+            password == ADMIN_PASSWORD
+        ):
+
+            session["admin"] = True
+            return redirect("/admin-page")
+
+        return render_template(
+            "admin_login.html",
+            error="Wrong username or password."
+        )
+
+    return render_template("admin_login.html")
+
 
 @app.route("/delete-members", methods=["POST"])
 def delete_members():
