@@ -39,6 +39,7 @@ with app.app_context():
 @app.route("/", methods=["GET", "POST"])
 def join_community():
     if request.method == "POST":
+
         name = request.form.get("name")
         email = request.form.get("email")
         instagram = request.form.get("instagram")
@@ -47,22 +48,23 @@ def join_community():
         if not name or not email or not instagram or not birthday:
             return "All fields are required", 400
 
+        # Check duplicate email
         existing_email = CommunityMember.query.filter(
             db.func.lower(CommunityMember.email) == email.lower()
         ).first()
-        
+
         if existing_email:
             return jsonify({
                 "success": False,
                 "type": "email",
                 "message": f"Email ({email}) is already registered."
             }), 409
-        
-        
+
+        # Check duplicate Instagram
         existing_instagram = CommunityMember.query.filter(
             db.func.lower(CommunityMember.instagram) == instagram.lower()
         ).first()
-        
+
         if existing_instagram:
             return jsonify({
                 "success": False,
@@ -77,15 +79,16 @@ def join_community():
             birthday=birthday
         )
 
-        db.session.add(member)
-        db.session.commit()
-
         data = {
             "sender": {
                 "name": "Nayya Community",
                 "email": "community@nayyastudio.com"
             },
-            "to": [{"email": email}],
+            "to": [
+                {
+                    "email": email
+                }
+            ],
             "subject": "Welcome to Nayya Community",
             "htmlContent": f"""
                 <h2>Welcome to Nayya Community</h2>
@@ -98,38 +101,42 @@ def join_community():
             """
         }
 
-                try:
-                    response = requests.post(
-                        "https://api.brevo.com/v3/smtp/email",
-                        headers={
-                            "accept": "application/json",
-                            "api-key": BREVO_API_KEY,
-                            "content-type": "application/json"
-                        },
-                        json=data,
-                        timeout=10
-                    )
-        
-                    print(response.status_code)
-                    print(response.text)
-        
-                    if response.status_code not in [200, 201, 202]:
-                        return jsonify({
-                            "success": False,
-                            "message": "Something went wrong. Please try again."
-                        }), 500
-        
-                except Exception as e:
-                    print("BREVO ERROR:", e)
-                    return jsonify({
-                        "success": False,
-                        "message": "Something went wrong. Please try again."
-                    }), 500
-        
-                db.session.add(member)
-                db.session.commit()
-        
-                return "success", 200
+        try:
+
+            response = requests.post(
+                "https://api.brevo.com/v3/smtp/email",
+                headers={
+                    "accept": "application/json",
+                    "api-key": BREVO_API_KEY,
+                    "content-type": "application/json"
+                },
+                json=data,
+                timeout=10
+            )
+
+            print(response.status_code)
+            print(response.text)
+
+            if response.status_code not in [200, 201, 202]:
+                return jsonify({
+                    "success": False,
+                    "message": "Something went wrong. Please try again."
+                }), 500
+
+        except Exception as e:
+
+            print("BREVO ERROR:", e)
+
+            return jsonify({
+                "success": False,
+                "message": "Something went wrong. Please try again."
+            }), 500
+
+        # Save only after email is sent successfully
+        db.session.add(member)
+        db.session.commit()
+
+        return "success", 200
 
     return render_template("join_community.html")
 
