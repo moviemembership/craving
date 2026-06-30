@@ -237,28 +237,42 @@
     }
 
     .logout-btn{
-
-        background:#d19894;
-    
-        color:white;
-    
-        padding:14px 24px;
-    
-        border-radius:18px;
-    
-        text-decoration:none;
-    
-        font-weight:500;
-    
-        transition:.3s;
-    
-    }
-    
-    .logout-btn:hover{
-    
-        background:#bf827d;
-    
-    }
+          display:inline-flex;
+          align-items:center;
+          justify-content:center;
+      
+          height:50px;
+          padding:0 26px;
+      
+          background:#d19894;
+          color:#fff;
+      
+          border:none;
+          border-radius:18px;
+      
+          text-decoration:none;
+          font-family:"Poppins",sans-serif;
+          font-size:16px;
+          font-weight:500;
+      
+          box-shadow:none;
+          outline:none;
+      
+          transition:.25s;
+      }
+      
+      .logout-btn:hover{
+          background:#bf817d;
+      }
+      
+      .logout-btn:visited{
+          color:#fff;
+      }
+      
+      .logout-btn:focus{
+          outline:none;
+          box-shadow:none;
+      }
 
     @media (max-width: 768px) {
       .page {
@@ -297,9 +311,11 @@
       </div>
     </div>
 
-    <a href="/logout" class="logout-btn">
-        Logout
-    </a>
+    <form action="/logout" method="GET" style="display:inline;">
+        <button type="submit" class="logout-btn">
+            Logout
+        </button>
+    </form>
 
     <form method="GET" action="/email-list" class="controls">
       <input
