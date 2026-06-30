@@ -550,7 +550,7 @@
 
             <div class="popup-bg" id="duplicatePopup">
               <div class="popup-box">
-                <h2>Already Registered</h2>
+                <h2 id="popupTitle">Already Registered</h2>
                 <p id="duplicateMessage"></p>
                 <button type="button" id="closeDuplicatePopup">OK</button>
               </div>
@@ -694,9 +694,17 @@
         submitBtn.disabled = false;
         submitBtn.innerText = "SIGN UP";
   
+        const popupTitle = document.getElementById("popupTitle");
+
+        if (error.message.includes("already registered")) {
+          popupTitle.innerText = "Already Registered";
+        } else {
+          popupTitle.innerText = "Oops!";
+        }
+        
         duplicateMessage.innerText =
           error.message || "Something went wrong. Please try again.";
-  
+        
         duplicatePopup.style.display = "flex";
       }
     });
