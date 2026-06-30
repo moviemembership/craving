@@ -351,6 +351,141 @@
       margin-top: 18px;
     }
 
+    .popup-overlay{
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,.35);
+    
+        display:flex;
+        align-items:center;
+        justify-content:center;
+    
+        opacity:0;
+        visibility:hidden;
+        transition:.35s ease;
+    
+        z-index:9999;
+    }
+    
+    .popup-overlay.show{
+        opacity:1;
+        visibility:visible;
+    }
+    
+    .popup-box{
+    
+        width:420px;
+        max-width:90vw;
+    
+        background:#FFF8EF;
+        border-radius:28px;
+    
+        padding:40px 35px 30px;
+    
+        text-align:center;
+    
+        position:relative;
+    
+        box-shadow:
+        0 20px 60px rgba(0,0,0,.18);
+    
+        transform:scale(.9);
+        opacity:0;
+    
+        transition:
+        transform .35s ease,
+        opacity .35s ease;
+    }
+    
+    .popup-overlay.show .popup-box{
+        transform:scale(1);
+        opacity:1;
+    }
+    
+    .popup-box h2{
+    
+        margin:0;
+    
+        color:#4b403b;
+    
+        font-size:40px;
+    
+        font-weight:600;
+    }
+    
+    .popup-box p{
+    
+        margin-top:18px;
+    
+        line-height:1.7;
+    
+        color:#6f6660;
+    
+        font-size:18px;
+    }
+    
+    .popup-box button{
+    
+        margin-top:30px;
+    
+        width:100%;
+    
+        border:none;
+    
+        border-radius:18px;
+    
+        background:#b7b8ab;
+    
+        color:white;
+    
+        padding:18px;
+    
+        font-size:24px;
+    
+        font-weight:600;
+    
+        cursor:pointer;
+    
+        transition:.25s;
+    }
+    
+    .popup-box button:hover{
+        background:#a9aa9d;
+    }
+    
+    /* Close button */
+    
+    .popup-close{
+    
+        position:absolute;
+    
+        top:16px;
+        right:16px;
+    
+        width:34px;
+        height:34px;
+    
+        border:none;
+    
+        background:transparent !important;
+    
+        color:#888;
+    
+        font-size:28px;
+    
+        cursor:pointer;
+    
+        line-height:1;
+    
+        padding:0;
+    
+        margin:0 !important;
+    }
+    
+    .popup-close:hover{
+        color:#444;
+    }
+
     @keyframes fadeOut {
       from {
         opacity: 1;
@@ -376,6 +511,39 @@
     }
 
     @media (max-width: 768px) {
+
+          .popup-box{
+  
+          width:340px;
+  
+          padding:30px 24px 22px;
+  
+          border-radius:24px;
+      }
+  
+      .popup-box h2{
+          font-size:26px;
+      }
+  
+      .popup-box p{
+          font-size:16px;
+      }
+  
+      .popup-box button{
+  
+          font-size:20px;
+  
+          padding:15px;
+      }
+  
+      .popup-close{
+  
+          top:12px;
+          right:12px;
+  
+          font-size:24px;
+      }
+      
       .page {
         min-height: 100vh;
         background-image: url("https://raw.githubusercontent.com/moviemembership/craving/refs/heads/main/ChatGPT%20Image%20Jun%2018%2C%202026%20at%2003_48_11%20AM.png");
@@ -548,12 +716,26 @@
             
             </div>
 
-            <div class="popup-bg" id="duplicatePopup">
-              <div class="popup-box">
-                <h2 id="popupTitle">Already Registered</h2>
-                <p id="duplicateMessage"></p>
-                <button type="button" id="closeDuplicatePopup">OK</button>
-              </div>
+            <div id="duplicatePopup" class="popup-overlay">
+
+                <div class="popup-box">
+            
+                    <button id="closeDuplicatePopup" class="popup-close">
+                        &times;
+                    </button>
+            
+                    <h2 id="popupTitle">
+                        Already Registered
+                    </h2>
+            
+                    <p id="duplicateMessage"></p>
+            
+                    <button id="popupOkBtn">
+                        OK
+                    </button>
+            
+                </div>
+            
             </div>
 
           </form>
@@ -580,135 +762,144 @@
     </div>
   </div>
 
-  <script>
-    const form = document.getElementById("communityForm");
-    const signupSection = document.getElementById("signupSection");
-    const signupIntro = document.getElementById("signupIntro");
-    const thankYouSection = document.getElementById("thankYouSection");
-    const submitBtn = document.getElementById("submitBtn");
-  
-    const duplicatePopup = document.getElementById("duplicatePopup");
-    const duplicateMessage = document.getElementById("duplicateMessage");
-    const closeDuplicatePopup = document.getElementById("closeDuplicatePopup");
-  
-    closeDuplicatePopup.addEventListener("click", function () {
-      duplicatePopup.style.display = "none";
-    });
-  
-    function getTodayGMT8() {
-      const now = new Date();
-      const utc = now.getTime() + now.getTimezoneOffset() * 60000;
-      return new Date(utc + 8 * 60 * 60 * 1000);
-    }
-  
-    function addYearDropdown(instance) {
-      const currentMonth = instance.calendarContainer.querySelector(".flatpickr-current-month");
-      const yearInput = instance.currentYearElement;
-  
-      if (!currentMonth || !yearInput) return;
-  
-      let existingSelect = currentMonth.querySelector(".nayya-year-select");
-      if (existingSelect) {
-        existingSelect.value = instance.currentYear;
-        return;
-      }
-  
-      const yearSelect = document.createElement("select");
-      yearSelect.className = "nayya-year-select";
-      yearSelect.setAttribute("aria-label", "Select year");
-  
-      const maxYear = getTodayGMT8().getFullYear();
-      const minYear = maxYear - 100;
-  
-      for (let year = maxYear; year >= minYear; year--) {
-        const option = document.createElement("option");
-        option.value = year;
-        option.textContent = year;
-        yearSelect.appendChild(option);
-      }
-  
-      yearSelect.value = instance.currentYear;
-  
-      yearSelect.addEventListener("change", function () {
-        instance.changeYear(parseInt(this.value, 10));
-      });
-  
-      yearInput.parentNode.style.display = "none";
-      currentMonth.appendChild(yearSelect);
-    }
-  
-    flatpickr("#birthday", {
-      dateFormat: "Y-m-d",
-      altInput: true,
-      altFormat: "d M Y",
-      defaultDate: getTodayGMT8(),
-      allowInput: false,
-      clickOpens: true,
-      disableMobile: true,
-      monthSelectorType: "dropdown",
-      onReady: function(selectedDates, dateStr, instance) {
-        addYearDropdown(instance);
-      },
-      onMonthChange: function(selectedDates, dateStr, instance) {
-        addYearDropdown(instance);
-      },
-      onYearChange: function(selectedDates, dateStr, instance) {
-        addYearDropdown(instance);
-      },
-      onOpen: function(selectedDates, dateStr, instance) {
-        addYearDropdown(instance);
-      }
-    });
-  
-    form.addEventListener("submit", async function(event) {
-      event.preventDefault();
-  
-      submitBtn.disabled = true;
-      submitBtn.innerText = "SENDING...";
-  
-      const formData = new FormData(form);
-  
-      try {
-        const response = await fetch("/", {
-          method: "POST",
-          body: formData
-        });
-  
-        if (response.ok) {
-          signupSection.classList.add("fade-out");
-          signupIntro.classList.add("fade-out");
-  
-          setTimeout(() => {
-            signupSection.style.display = "none";
-            signupIntro.style.display = "none";
-            thankYouSection.style.display = "block";
-            thankYouSection.classList.add("fade-in");
-          }, 500);
-  
-        } else {
-          const data = await response.json();
-          throw new Error(data.message || "Something went wrong. Please try again.");
-        }
-  
-      } catch (error) {
-        submitBtn.disabled = false;
-        submitBtn.innerText = "SIGN UP";
-  
-        const popupTitle = document.getElementById("popupTitle");
+<script>
+  const form = document.getElementById("communityForm");
+  const signupSection = document.getElementById("signupSection");
+  const signupIntro = document.getElementById("signupIntro");
+  const thankYouSection = document.getElementById("thankYouSection");
+  const submitBtn = document.getElementById("submitBtn");
 
-        if (error.message.includes("already registered")) {
-          popupTitle.innerText = "Already Registered";
-        } else {
-          popupTitle.innerText = "Oops!";
-        }
-        
-        duplicateMessage.innerText =
-          error.message || "Something went wrong. Please try again.";
-        
-        duplicatePopup.style.display = "flex";
-      }
+  const duplicatePopup = document.getElementById("duplicatePopup");
+  const duplicateMessage = document.getElementById("duplicateMessage");
+  const closeDuplicatePopup = document.getElementById("closeDuplicatePopup");
+  const popupOkBtn = document.getElementById("popupOkBtn");
+  const popupTitle = document.getElementById("popupTitle");
+
+  closeDuplicatePopup.addEventListener("click", function () {
+    duplicatePopup.classList.remove("show");
+  });
+
+  popupOkBtn.addEventListener("click", function () {
+    duplicatePopup.classList.remove("show");
+  });
+
+  function getTodayGMT8() {
+    const now = new Date();
+    const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+    return new Date(utc + 8 * 60 * 60 * 1000);
+  }
+
+  function addYearDropdown(instance) {
+    const currentMonth = instance.calendarContainer.querySelector(".flatpickr-current-month");
+    const yearInput = instance.currentYearElement;
+
+    if (!currentMonth || !yearInput) return;
+
+    let existingSelect = currentMonth.querySelector(".nayya-year-select");
+
+    if (existingSelect) {
+      existingSelect.value = instance.currentYear;
+      return;
+    }
+
+    const yearSelect = document.createElement("select");
+    yearSelect.className = "nayya-year-select";
+    yearSelect.setAttribute("aria-label", "Select year");
+
+    const maxYear = getTodayGMT8().getFullYear();
+    const minYear = maxYear - 100;
+
+    for (let year = maxYear; year >= minYear; year--) {
+      const option = document.createElement("option");
+      option.value = year;
+      option.textContent = year;
+      yearSelect.appendChild(option);
+    }
+
+    yearSelect.value = instance.currentYear;
+
+    yearSelect.addEventListener("change", function () {
+      instance.changeYear(parseInt(this.value, 10));
     });
-  </script>
+
+    yearInput.parentNode.style.display = "none";
+    currentMonth.appendChild(yearSelect);
+  }
+
+  flatpickr("#birthday", {
+    dateFormat: "Y-m-d",
+    altInput: true,
+    altFormat: "d M Y",
+    defaultDate: getTodayGMT8(),
+    allowInput: false,
+    clickOpens: true,
+    disableMobile: true,
+    monthSelectorType: "dropdown",
+
+    onReady: function(selectedDates, dateStr, instance) {
+      addYearDropdown(instance);
+    },
+
+    onMonthChange: function(selectedDates, dateStr, instance) {
+      addYearDropdown(instance);
+    },
+
+    onYearChange: function(selectedDates, dateStr, instance) {
+      addYearDropdown(instance);
+    },
+
+    onOpen: function(selectedDates, dateStr, instance) {
+      addYearDropdown(instance);
+    }
+  });
+
+  form.addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    submitBtn.disabled = true;
+    submitBtn.innerText = "SENDING...";
+
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch("/", {
+        method: "POST",
+        body: formData
+      });
+
+      if (response.ok) {
+        signupSection.classList.add("fade-out");
+        signupIntro.classList.add("fade-out");
+
+        setTimeout(() => {
+          signupSection.style.display = "none";
+          signupIntro.style.display = "none";
+          thankYouSection.style.display = "block";
+          thankYouSection.classList.add("fade-in");
+        }, 500);
+
+      } else {
+        const data = await response.json();
+        throw new Error(data.message || "Something went wrong. Please try again.");
+      }
+
+    } catch (error) {
+      submitBtn.disabled = false;
+      submitBtn.innerText = "SIGN UP";
+
+      if (error.message.toLowerCase().includes("already registered")) {
+        popupTitle.innerText = "Already Registered";
+      } else {
+        popupTitle.innerText = "Oops!";
+      }
+
+      duplicateMessage.innerText =
+        error.message || "Something went wrong. Please try again.";
+
+      duplicatePopup.classList.add("show");
+    }
+  });
+</script>
 
 </body>
 </html>
