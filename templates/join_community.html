@@ -586,54 +586,57 @@
     const signupIntro = document.getElementById("signupIntro");
     const thankYouSection = document.getElementById("thankYouSection");
     const submitBtn = document.getElementById("submitBtn");
-    const errorMessage = document.getElementById("errorMessage");
-
-    document.getElementById("closeDuplicatePopup").addEventListener("click", function () {
-      document.getElementById("duplicatePopup").style.display = "none";
+  
+    const duplicatePopup = document.getElementById("duplicatePopup");
+    const duplicateMessage = document.getElementById("duplicateMessage");
+    const closeDuplicatePopup = document.getElementById("closeDuplicatePopup");
+  
+    closeDuplicatePopup.addEventListener("click", function () {
+      duplicatePopup.style.display = "none";
     });
-
+  
     function getTodayGMT8() {
       const now = new Date();
       const utc = now.getTime() + now.getTimezoneOffset() * 60000;
       return new Date(utc + 8 * 60 * 60 * 1000);
     }
-
+  
     function addYearDropdown(instance) {
       const currentMonth = instance.calendarContainer.querySelector(".flatpickr-current-month");
       const yearInput = instance.currentYearElement;
-
+  
       if (!currentMonth || !yearInput) return;
-
+  
       let existingSelect = currentMonth.querySelector(".nayya-year-select");
       if (existingSelect) {
         existingSelect.value = instance.currentYear;
         return;
       }
-
+  
       const yearSelect = document.createElement("select");
       yearSelect.className = "nayya-year-select";
       yearSelect.setAttribute("aria-label", "Select year");
-
+  
       const maxYear = getTodayGMT8().getFullYear();
       const minYear = maxYear - 100;
-
+  
       for (let year = maxYear; year >= minYear; year--) {
         const option = document.createElement("option");
         option.value = year;
         option.textContent = year;
         yearSelect.appendChild(option);
       }
-
+  
       yearSelect.value = instance.currentYear;
-
+  
       yearSelect.addEventListener("change", function () {
         instance.changeYear(parseInt(this.value, 10));
       });
-
+  
       yearInput.parentNode.style.display = "none";
       currentMonth.appendChild(yearSelect);
     }
-
+  
     flatpickr("#birthday", {
       dateFormat: "Y-m-d",
       altInput: true,
@@ -656,49 +659,45 @@
         addYearDropdown(instance);
       }
     });
-
+  
     form.addEventListener("submit", async function(event) {
       event.preventDefault();
-
+  
       submitBtn.disabled = true;
       submitBtn.innerText = "SENDING...";
-      errorMessage.style.display = "none";
-
+  
       const formData = new FormData(form);
-
+  
       try {
         const response = await fetch("/", {
           method: "POST",
           body: formData
         });
-
+  
         if (response.ok) {
           signupSection.classList.add("fade-out");
           signupIntro.classList.add("fade-out");
-
+  
           setTimeout(() => {
             signupSection.style.display = "none";
             signupIntro.style.display = "none";
-
             thankYouSection.style.display = "block";
             thankYouSection.classList.add("fade-in");
           }, 500);
-
+  
         } else {
-          } else {
-            const data = await response.json();
-            throw new Error(data.message || "Something went wrong. Please try again.");
-          }
+          const data = await response.json();
+          throw new Error(data.message || "Something went wrong. Please try again.");
         }
-
+  
       } catch (error) {
         submitBtn.disabled = false;
         submitBtn.innerText = "SIGN UP";
-      
-        document.getElementById("duplicateMessage").innerText =
+  
+        duplicateMessage.innerText =
           error.message || "Something went wrong. Please try again.";
-      
-        document.getElementById("duplicatePopup").style.display = "flex";
+  
+        duplicatePopup.style.display = "flex";
       }
     });
   </script>
