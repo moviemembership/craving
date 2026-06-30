@@ -585,7 +585,7 @@
       const formData = new FormData(form);
 
       try {
-        const response = await fetch("/join-community", {
+        const response = await fetch("/", {
           method: "POST",
           body: formData
         });
