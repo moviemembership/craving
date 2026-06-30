@@ -98,25 +98,38 @@ def join_community():
             """
         }
 
-        try:
-            response = requests.post(
-                "https://api.brevo.com/v3/smtp/email",
-                headers={
-                    "accept": "application/json",
-                    "api-key": BREVO_API_KEY,
-                    "content-type": "application/json"
-                },
-                json=data,
-                timeout=10
-            )
-
-            print(response.status_code)
-            print(response.text)
-
-        except Exception as e:
-            print("BREVO ERROR:", e)
-
-        return "success", 200
+                try:
+                    response = requests.post(
+                        "https://api.brevo.com/v3/smtp/email",
+                        headers={
+                            "accept": "application/json",
+                            "api-key": BREVO_API_KEY,
+                            "content-type": "application/json"
+                        },
+                        json=data,
+                        timeout=10
+                    )
+        
+                    print(response.status_code)
+                    print(response.text)
+        
+                    if response.status_code not in [200, 201, 202]:
+                        return jsonify({
+                            "success": False,
+                            "message": "Something went wrong. Please try again."
+                        }), 500
+        
+                except Exception as e:
+                    print("BREVO ERROR:", e)
+                    return jsonify({
+                        "success": False,
+                        "message": "Something went wrong. Please try again."
+                    }), 500
+        
+                db.session.add(member)
+                db.session.commit()
+        
+                return "success", 200
 
     return render_template("join_community.html")
 
