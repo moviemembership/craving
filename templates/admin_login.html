@@ -1,25 +1,131 @@
-from flask import session, redirect
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Nayya Admin Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-@app.route("/admin-login", methods=["GET", "POST"])
-def admin_login():
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    if request.method == "POST":
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
 
-        username = request.form.get("username")
-        password = request.form.get("password")
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-        if (
-            username == ADMIN_USERNAME
-            and
-            password == ADMIN_PASSWORD
-        ):
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: #ead7ca;
+      color: #4b403b;
+    }
 
-            session["admin"] = True
-            return redirect("/admin-page")
+    .page {
+      min-height: 100vh;
+      background-image: url("https://raw.githubusercontent.com/moviemembership/craving/refs/heads/main/ChatGPT%20Image%20Jun%2018%2C%202026%20at%2003_48_11%20AM.png");
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+    }
 
-        return render_template(
-            "admin_login.html",
-            error="Wrong username or password."
-        )
+    .card {
+      width: 90%;
+      max-width: 480px;
+      background: rgba(255, 250, 240, 0.92);
+      border-radius: 32px;
+      padding: 45px 35px;
+      text-align: center;
+      box-shadow: 0 12px 35px rgba(90, 60, 45, 0.12);
+    }
 
-    return render_template("admin_login.html")
+    .logo {
+      width: 230px;
+      max-width: 85%;
+      margin-bottom: 25px;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      letter-spacing: 2px;
+      margin-bottom: 30px;
+      color: #6f6660;
+    }
+
+    input {
+      width: 100%;
+      height: 60px;
+      margin-bottom: 18px;
+      padding: 0 22px;
+      border: 1px solid rgba(130, 105, 94, 0.25);
+      border-radius: 40px;
+      background: rgba(255, 250, 240, 0.9);
+      font-family: "Poppins", sans-serif;
+      font-size: 15px;
+      color: #4b403b;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      height: 62px;
+      border: none;
+      border-radius: 40px;
+      background: #aeb2a6;
+      color: white;
+      font-family: "Poppins", sans-serif;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    button:hover {
+      background: #9fa396;
+    }
+
+    .error {
+      margin-top: 18px;
+      color: #9b3f3f;
+      font-size: 14px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-top: 22px;
+      color: #8b6f68;
+      text-decoration: none;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="page">
+    <div class="card">
+
+      <div class="subtitle">ADMIN ACCESS</div>
+
+      <form method="POST" action="/admin-login">
+        <input type="text" name="username" placeholder="Admin Username" required>
+
+        <input type="password" name="password" placeholder="Admin Password" required>
+
+        <button type="submit">LOGIN</button>
+      </form>
+
+      {% if error %}
+        <div class="error">{{ error }}</div>
+      {% endif %}
+
+      <a href="/" class="back">Back to Community Page</a>
+
+    </div>
+  </div>
+
+</body>
+</html>
