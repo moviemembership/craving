@@ -149,6 +149,10 @@ def admin_page():
 
 @app.route("/delete-members", methods=["POST"])
 def delete_members():
+
+    if not session.get("admin"):
+        return jsonify({"success":False}),401
+
     ids = request.json.get("ids", [])
 
     if not ids:
