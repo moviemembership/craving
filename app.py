@@ -93,8 +93,12 @@ def join_community():
     return render_template("join_community.html")
 
 
-@app.route("/email-list")
-def email_list():
+@app.route("/admin-page")
+def admin_page():
+
+    if not session.get("admin"):
+        return redirect("/admin-login")
+    
     search = request.args.get("search", "")
     sort = request.args.get("sort", "latest")
     per_page = int(request.args.get("per_page", 10))
@@ -155,6 +159,12 @@ def delete_members():
 
     return jsonify({"success": True})
 
+@app.route("/logout")
+def logout():
+
+    session.clear()
+
+    return redirect("/admin-login")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
