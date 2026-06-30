@@ -236,6 +236,30 @@
       padding: 35px;
     }
 
+    .logout-btn{
+
+        background:#d19894;
+    
+        color:white;
+    
+        padding:14px 24px;
+    
+        border-radius:18px;
+    
+        text-decoration:none;
+    
+        font-weight:500;
+    
+        transition:.3s;
+    
+    }
+    
+    .logout-btn:hover{
+    
+        background:#bf827d;
+    
+    }
+
     @media (max-width: 768px) {
       .page {
         padding: 20px;
@@ -272,6 +296,10 @@
         Total Registered: {{ total_members }}
       </div>
     </div>
+
+    <a href="/logout" class="logout-btn">
+        Logout
+    </a>
 
     <form method="GET" action="/email-list" class="controls">
       <input
