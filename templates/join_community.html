@@ -189,22 +189,11 @@
     }
 
     #thankYouSection {
-      display:none;
-      opacity:0;
-  
-      width:100%;
-      min-height:600px;
-  
-      display:flex;
-      flex-direction:column;
-  
-      justify-content:center;
-      align-items:center;
-  
-      text-align:center;
-  
-      color:#4b403b;
-      
+      display: none;
+      opacity: 0;
+      width: 100%;
+      text-align: center;
+      color: #4b403b;
     }
 
     .thank-heart {
@@ -912,10 +901,21 @@
           signupSection.style.display = "none";
           signupIntro.style.display = "none";
           
-          document.querySelector(".right-section").style.maxWidth = "100%";
-          document.querySelector(".right-section").style.margin = "0 auto";
+          const paper = document.querySelector(".paper");
+          const rightSection = document.querySelector(".right-section");
+          
+          paper.style.display = "flex";
+          paper.style.justifyContent = "center";
+          paper.style.alignItems = "center";
+          
+          rightSection.style.maxWidth = "600px";
+          rightSection.style.width = "100%";
+          rightSection.style.margin = "0 auto";
           
           thankYouSection.style.display = "flex";
+          thankYouSection.style.flexDirection = "column";
+          thankYouSection.style.alignItems = "center";
+          thankYouSection.style.justifyContent = "center";
           thankYouSection.classList.add("fade-in");
         }, 500);
 
