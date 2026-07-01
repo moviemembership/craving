@@ -189,10 +189,22 @@
     }
 
     #thankYouSection {
-      display: none;
-      opacity: 0;
-      text-align: center;
-      color: #4b403b;
+      display:none;
+      opacity:0;
+  
+      width:100%;
+      min-height:600px;
+  
+      display:flex;
+      flex-direction:column;
+  
+      justify-content:center;
+      align-items:center;
+  
+      text-align:center;
+  
+      color:#4b403b;
+      
     }
 
     .thank-heart {
@@ -210,13 +222,22 @@
     }
 
     .thank-message {
-      background: rgba(174, 178, 166, 0.85);
-      color: #4b403b;
-      padding: 30px;
-      border-radius: 25px;
-      font-size: 17px;
-      line-height: 1.8;
-      letter-spacing: 0.5px;
+    
+        max-width:480px;
+    
+        background:rgba(174,178,166,.9);
+    
+        color:#4b403b;
+    
+        padding:35px;
+    
+        border-radius:26px;
+    
+        font-size:18px;
+    
+        line-height:1.8;
+    
+        text-align:center;
     }
 
     .error-message {
@@ -890,7 +911,11 @@
         setTimeout(() => {
           signupSection.style.display = "none";
           signupIntro.style.display = "none";
-          thankYouSection.style.display = "block";
+          
+          document.querySelector(".right-section").style.maxWidth = "100%";
+          document.querySelector(".right-section").style.margin = "0 auto";
+          
+          thankYouSection.style.display = "flex";
           thankYouSection.classList.add("fade-in");
         }, 500);
 
