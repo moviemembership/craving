@@ -98,7 +98,7 @@ def join_community():
                 </h2>
             
                 <p>
-                    Thank you for joining our journey. Your exclusive welcome gift is waiting—along with member-only rewards, early access, and beautiful moments ahead.
+                    Thank you for joining our journey. Your exclusive welcome gift is waiting—along with early access, and beautiful moments ahead.
                 </p>
             
             </div>
