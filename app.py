@@ -91,13 +91,23 @@ def join_community():
             ],
             "subject": "Welcome to Nayya Community",
             "htmlContent": f"""
-                <h2>Welcome to Nayya Community</h2>
-                <p>Hi {name},</p>
-                <p>Thank you for joining us.</p>
-                <p>We're happy to have you here.</p>
-                <p><b>Instagram:</b> {instagram}</p>
-                <p><b>Birthday:</b> {birthday}</p>
-                <p>Love,<br>Nayya</p>
+            <div style="font-family: Arial, sans-serif; text-align:center; color:#4b403b; line-height:1.7; padding:20px;">
+            
+                <h2 style="font-size:24px; font-weight:500;">
+                    Welcome to the Nayya Community, {name}! 🤍
+                </h2>
+            
+                <p style="font-size:16px; max-width:560px; margin:0 auto 24px;">
+                    Thank you for joining our journey. Your exclusive welcome gift is waiting—along with member-only rewards, early access, and beautiful moments ahead.
+                </p>
+            
+                <img
+                    src="https://join.nayyastudio.com/static/EDM-community.png"
+                    alt="Nayya Welcome Gift"
+                    style="width:100%; max-width:600px; border-radius:18px; margin:20px 0;"
+                >
+            
+            </div>
             """
         }
 
