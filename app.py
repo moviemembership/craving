@@ -107,11 +107,6 @@ def join_community():
                     style="width:100%; max-width:600px; border-radius:18px; margin:20px 0;"
                 >
             
-                <p style="font-size:16px; margin-top:24px;">
-                    Love,<br>
-                    Nayya
-                </p>
-            
             </div>
             """
         }
