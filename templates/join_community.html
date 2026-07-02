@@ -648,6 +648,30 @@
         max-width: 330px;
       }
     }
+
+    select {
+  width: 100%;
+  height: 76px;
+  padding: 0 25px 0 70px;
+  border: 1px solid rgba(130, 105, 94, 0.25);
+  border-radius: 18px;
+  background: rgba(255, 250, 240, 0.7);
+  font-family: "Poppins", sans-serif;
+  font-size: 18px;
+  outline: none;
+  color: #4b403b;
+  box-shadow: 0 8px 25px rgba(90, 60, 45, 0.08);
+  appearance: none;
+}
+
+@media (max-width: 768px) {
+  select {
+    height: 60px;
+    font-size: 14px;
+    border-radius: 40px;
+    padding-left: 58px;
+  }
+}
   </style>
 </head>
 
@@ -723,6 +747,16 @@
                 required
               >
             </div>
+
+            <div class="input-wrap">
+  <span class="input-icon">⌄</span>
+
+  <select name="region" required>
+    <option value="" disabled selected>Select Region</option>
+    <option value="West Malaysia">West Malaysia</option>
+    <option value="East Malaysia">East Malaysia</option>
+  </select>
+   </div>
 
             <button type="submit" id="submitBtn">
               SIGN UP
