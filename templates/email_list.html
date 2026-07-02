@@ -414,6 +414,7 @@
             <th>Email</th>
             <th>Instagram</th>
             <th>Birthday</th>
+            <th>Region</th>
             <th>Registered Date</th>
           </tr>
         </thead>
@@ -428,6 +429,7 @@
             <td>{{ member.email }}</td>
             <td>{{ member.instagram }}</td>
             <td>{{ member.birthday }}</td>
+            <td>{{ member.region }}</td>
             <td>{{ member.created_at.strftime("%Y-%m-%d %H:%M") }}</td>
           </tr>
           {% else %}
