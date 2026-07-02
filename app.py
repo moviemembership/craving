@@ -12,10 +12,11 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 BREVO_API_KEY = os.getenv("BREVO_API_KEY")
 ADMIN_USERNAME = os.getenv("ADMIN_USERNAME")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
+
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 
 if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
-    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql://", 1)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -29,7 +30,11 @@ class CommunityMember(db.Model):
     email = db.Column(db.String(200), nullable=False)
     instagram = db.Column(db.String(150), nullable=False)
     birthday = db.Column(db.String(50), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    region = db.Column(db.String(50), nullable=False, default="West Malaysia")
+    created_at = db.Column(
+        db.DateTime,
+        default=lambda: datetime.utcnow() + timedelta(hours=8)
+    )
 
 
 with app.app_context():
@@ -44,11 +49,14 @@ def join_community():
         email = request.form.get("email")
         instagram = request.form.get("instagram")
         birthday = request.form.get("birthday")
+        region = request.form.get("region")
 
-        if not name or not email or not instagram or not birthday:
-            return "All fields are required", 400
+        if not name or not email or not instagram or not birthday or not region:
+            return jsonify({
+                "success": False,
+                "message": "All fields are required."
+            }), 400
 
-        # Check duplicate email
         existing_email = CommunityMember.query.filter(
             db.func.lower(CommunityMember.email) == email.lower()
         ).first()
@@ -60,7 +68,6 @@ def join_community():
                 "message": f"Email ({email}) is already registered."
             }), 409
 
-        # Check duplicate Instagram
         existing_instagram = CommunityMember.query.filter(
             db.func.lower(CommunityMember.instagram) == instagram.lower()
         ).first()
@@ -76,7 +83,8 @@ def join_community():
             name=name,
             email=email,
             instagram=instagram,
-            birthday=birthday
+            birthday=birthday,
+            region=region
         )
 
         data = {
@@ -84,35 +92,30 @@ def join_community():
                 "name": "Nayya Community",
                 "email": "community@nayyastudio.com"
             },
-            "to": [
-                {
-                    "email": email
-                }
-            ],
+            "to": [{"email": email}],
             "subject": "Welcome to Nayya Community",
             "htmlContent": f"""
             <div style="font-family: Arial, sans-serif; text-align:center; color:#4b403b; line-height:1.7; padding:20px;">
-            
+
                 <h2 style="font-size:24px; font-weight:500;">
                     Welcome to the Nayya Community, {name}! 🤍
                 </h2>
-            
+
                 <p style="font-size:16px; max-width:560px; margin:0 auto 24px;">
                     Thank you for joining our journey.
                 </p>
-            
+
                 <img
                     src="https://join.nayyastudio.com/static/EDM-community.png"
                     alt="Nayya Welcome Gift"
                     style="width:100%; max-width:600px; border-radius:18px; margin:20px 0;"
                 >
-            
+
             </div>
             """
         }
 
         try:
-
             response = requests.post(
                 "https://api.brevo.com/v3/smtp/email",
                 headers={
@@ -134,7 +137,6 @@ def join_community():
                 }), 500
 
         except Exception as e:
-
             print("BREVO ERROR:", e)
 
             return jsonify({
@@ -142,7 +144,6 @@ def join_community():
                 "message": "Something went wrong. Please try again."
             }), 500
 
-        # Save only after email is sent successfully
         db.session.add(member)
         db.session.commit()
 
@@ -153,7 +154,6 @@ def join_community():
 
 @app.route("/admin-page")
 def admin_page():
-
     if not session.get("admin"):
         return redirect("/admin-login")
 
@@ -170,7 +170,8 @@ def admin_page():
             db.or_(
                 CommunityMember.name.ilike(keyword),
                 CommunityMember.email.ilike(keyword),
-                CommunityMember.instagram.ilike(keyword)
+                CommunityMember.instagram.ilike(keyword),
+                CommunityMember.region.ilike(keyword)
             )
         )
 
@@ -211,7 +212,6 @@ def admin_page():
         CommunityMember.birthday.like(f"%-{today.month:02d}-%")
     ).count()
 
-    last_7_days = []
     chart_labels = []
     chart_values = []
 
@@ -247,20 +247,15 @@ def admin_page():
         birthday_members=birthday_members
     )
 
+
 @app.route("/admin-login", methods=["GET", "POST"])
 def admin_login():
-
     if request.method == "POST":
 
         username = request.form.get("username")
         password = request.form.get("password")
 
-        if (
-            username == ADMIN_USERNAME
-            and
-            password == ADMIN_PASSWORD
-        ):
-
+        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
             session["admin"] = True
             return redirect("/admin-page")
 
@@ -271,9 +266,9 @@ def admin_login():
 
     return render_template("admin_login.html")
 
+
 @app.route("/export-members")
 def export_members():
-
     if not session.get("admin"):
         return redirect("/admin-login")
 
@@ -282,7 +277,14 @@ def export_members():
     output = io.StringIO()
     writer = csv.writer(output)
 
-    writer.writerow(["Name", "Email", "Instagram", "Birthday", "Registered Date"])
+    writer.writerow([
+        "Name",
+        "Email",
+        "Instagram",
+        "Birthday",
+        "Region",
+        "Registered Date"
+    ])
 
     for member in members:
         writer.writerow([
@@ -290,6 +292,7 @@ def export_members():
             member.email,
             member.instagram,
             member.birthday,
+            member.region,
             member.created_at.strftime("%Y-%m-%d %H:%M")
         ])
 
@@ -306,30 +309,36 @@ def export_members():
 
 @app.route("/delete-members", methods=["POST"])
 def delete_members():
-
     if not session.get("admin"):
-        return jsonify({"success":False}),401
+        return jsonify({"success": False}), 401
 
     ids = request.json.get("ids", [])
 
     if not ids:
-        return jsonify({"success": False, "message": "No data selected"}), 400
+        return jsonify({
+            "success": False,
+            "message": "No data selected"
+        }), 400
 
-    CommunityMember.query.filter(CommunityMember.id.in_(ids)).delete(synchronize_session=False)
+    CommunityMember.query.filter(
+        CommunityMember.id.in_(ids)
+    ).delete(synchronize_session=False)
+
     db.session.commit()
 
     return jsonify({"success": True})
 
+
 @app.route("/logout")
 def logout():
-
     session.clear()
-
     return redirect("/admin-login")
+
 
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("404.html"), 404
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
